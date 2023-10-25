@@ -1,3 +1,4 @@
 resource "google_sourcerepo_repository" "my-repo" {
-  name = "my/repository"
+  project = var.repo_project_id
+  name = var.repo_name
 }
