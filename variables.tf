@@ -8,3 +8,8 @@ variable "repo_name" {
   type        = string
 }
 
+variable "repo_writers" {
+  description = "Optional list of IAM-format members to set as source repo writer."
+  type        = list(string)
+  default     = []
+}
