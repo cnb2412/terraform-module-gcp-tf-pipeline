@@ -35,3 +35,9 @@ variable "storage_bucket_location" {
   type        = string
   default = "EUROPE-WEST3"
 }
+
+variable "tf_version" {
+  description = "The terraform version, which should be used in the pipeline."
+  type        = string
+  default = "1.6.2"
+}
