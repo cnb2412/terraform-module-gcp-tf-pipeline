@@ -42,7 +42,7 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
       script = <<EOF
         #!/usr/bin/env bash
         ls -l 
-        echo "terraform {backend "gcs" {}}" > backend.tf
+        #echo "terraform {backend "gcs" {}}" > backend.tf
       EOF
       }
       step {
