@@ -39,7 +39,12 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
       timeout = "600s"
       step {
       name   = "ubuntu"
-      script = "echo -e 'terraform {\n backend \"gcs\" {\n }\n}' > backend.tf"
+      script = <<EOT
+        echo -e "terraform {\n backend "gcs" { \n }\n }" 
+      EOT
+      
+      
+      "echo -e ' {\n backend \"gcs\" {\n }\n}' > backend.tf"
       }
       step {
         name = "hashicorp/terraform:${var.tf_version}"
