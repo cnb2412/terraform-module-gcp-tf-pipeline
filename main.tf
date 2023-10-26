@@ -44,6 +44,10 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
       EOT
       }
       step {
+      name   = "ubuntu"
+      script = "ls -l; cat backend.tf"
+      }
+      step {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["init", "-input=false",
                 "-backend-config=bucket=${trimprefix(google_storage_bucket.tf-state-bucket.url,"gs://")}"]
