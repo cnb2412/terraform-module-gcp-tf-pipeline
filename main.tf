@@ -20,6 +20,7 @@ resource "google_storage_bucket" "tf-state-bucket" {
     }
 }
 
+#Todo: allow for other TF backends than gcs
 resource "google_cloudbuild_trigger" "my-repo-trigger" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   name          = "${var.resource_prefix}-repo-main-trigger"
@@ -36,6 +37,14 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
       }
     }
       timeout = "600s"
+      step {
+      name   = "bash"
+      script = <<EOF
+        #!/usr/bin/env bash
+        ls -l 
+        echo "terraform {backend "gcs" {}}" > backend.tf
+      EOF
+      }
       step {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["init", "-input=false",

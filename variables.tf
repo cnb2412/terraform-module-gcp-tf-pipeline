@@ -41,3 +41,13 @@ variable "tf_version" {
   type        = string
   default = "1.6.2"
 }
+
+variable "tf_backend" {
+    description = "Which Backend should be used for TF. Currently only GCP Storageaccount is supported."  
+    type        = string
+    default = "gcs"
+    validation {
+        condition     = contains(["gcs"], var.tf_backend)
+        error_message = "Currently only GCP Storageaccount is supported."
+  } 
+}
