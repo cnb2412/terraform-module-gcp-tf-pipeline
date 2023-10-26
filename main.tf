@@ -38,14 +38,21 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
     }
       timeout = "600s"
       step {
+      id = "create tf backend config"
       name   = "ubuntu"
       script = <<EOT
         echo 'terraform {\n backend "gcs" { \n }\n }' > backend.tf
       EOT
       }
       step {
+      id = "debug tf backend"
       name   = "ubuntu"
       script = "ls -l; cat backend.tf"
+      }
+      step {
+      id = "gcloud whoami"
+      name   = "gcr.io/cloud-builders/gcloud"
+      args = ["auth", "list"]
       }
       step {
         name = "hashicorp/terraform:${var.tf_version}"
