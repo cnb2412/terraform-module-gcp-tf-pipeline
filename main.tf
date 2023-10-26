@@ -38,9 +38,9 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
     }
       timeout = "600s"
       step {
-      name   = "bash"
+      name   = "ubuntu"
       script = <<EOF
-        #!/usr/bin/env bash
+        #!/usr/bin/bash
         ls -l 
         #echo "terraform {backend "gcs" {}}" > backend.tf
       EOF
