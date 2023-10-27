@@ -21,7 +21,7 @@ resource "google_storage_bucket" "tf-state-bucket" {
 }
 
 module "service-accounts" {
-  count = var.create_sa_for codebuild ? 1 : 0
+  count = var.create_sa_for_codebuild ? 1 : 0
   project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_ids
   source  = "terraform-google-modules/service-accounts/google"
   version = "4.2.2"

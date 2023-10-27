@@ -52,7 +52,7 @@ variable "tf_backend" {
   } 
 }
 
-variable "create_sa_for codebuild" {
+variable "create_sa_for_codebuild" {
     description = "Should a dedicated service account for the codebuild pipeline be created."
     type = bool
     default = true
