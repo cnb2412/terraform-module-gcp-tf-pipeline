@@ -26,7 +26,7 @@ module "service-accounts" {
   source  = "terraform-google-modules/service-accounts/google"
   version = "4.2.2"
   description = "SA for Codebuild Pipeline"
-  names         = ["${var.resource_prefix}-codeb-sa"]
+  names         = ["${var.resource_prefix}-sa"]
 }
 
 #Todo: allow for other TF backends than gcs
