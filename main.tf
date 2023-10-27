@@ -20,6 +20,15 @@ resource "google_storage_bucket" "tf-state-bucket" {
     }
 }
 
+module "service-accounts" {
+  count = var.create_sa_for codebuild ? 1 : 0
+  project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_ids
+  source  = "terraform-google-modules/service-accounts/google"
+  version = "4.2.2"
+  description = "SA for Codebuild Pipeline"
+  names         = ["${var.resource_prefix}-codeb-sa"]
+}
+
 #Todo: allow for other TF backends than gcs
 resource "google_cloudbuild_trigger" "my-repo-trigger" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
