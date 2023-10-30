@@ -1,11 +1,18 @@
 module "service-accounts" {
+  source  = "terraform-google-modules/service-accounts/google"
   count = var.create_sa_for_codebuild ? 1 : 0
   project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  source  = "terraform-google-modules/service-accounts/google"
   version = "4.2.2"
   description = "SA for Codebuild Pipeline"
   names         = ["${var.resource_prefix}-sa"]
-  project_roles = ["roles/iam.serviceAccountTokenCreator"]
+  project_roles = []
+}
+
+resource "google_project_iam_member" "project" {
+  count = var.create_sa_for_codebuild ? 1 : 0
+  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member = "serviceAccount:${module.service-accounts[0].email}"
 }
 
 resource "google_sourcerepo_repository" "my-repo" {
