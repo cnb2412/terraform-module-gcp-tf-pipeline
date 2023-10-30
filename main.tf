@@ -1,3 +1,12 @@
+module "service-accounts" {
+  count = var.create_sa_for_codebuild ? 1 : 0
+  project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  source  = "terraform-google-modules/service-accounts/google"
+  version = "4.2.2"
+  description = "SA for Codebuild Pipeline"
+  names         = ["${var.resource_prefix}-sa"]
+}
+
 resource "google_sourcerepo_repository" "my-repo" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   name = "${var.resource_prefix}-repo"
@@ -11,6 +20,14 @@ resource "google_sourcerepo_repository_iam_member" "editors" {
   member  = element(var.repo_writers, count.index)
 }
 
+resource "google_sourcerepo_repository_iam_member" "sa_access" {
+  count = var.create_sa_for_codebuild ? 1 : 0
+  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  repository = google_sourcerepo_repository.my-repo.name
+  role    = "roles/source.reader"
+  member = "serviceAccount:${module.service-accounts[0].email}"
+}
+
 resource "google_storage_bucket" "tf-state-bucket" {
     project = length(var.storage_project_id) > 0 ? var.storage_project_id : var.project_id
     name          = "${var.resource_prefix}-tfstate-storage"
@@ -20,21 +37,12 @@ resource "google_storage_bucket" "tf-state-bucket" {
     }
 }
 
-module "service-accounts" {
-  count = var.create_sa_for_codebuild ? 1 : 0
-  project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  source  = "terraform-google-modules/service-accounts/google"
-  version = "4.2.2"
-  description = "SA for Codebuild Pipeline"
-  names         = ["${var.resource_prefix}-sa"]
-}
-
 resource "google_storage_bucket_iam_member" "tf-state-bucket-member" {
+  count = var.create_sa_for_codebuild ? 1 : 0
   bucket = google_storage_bucket.tf-state-bucket.name
   role = "roles/storage.objectUser"
   member = "serviceAccount:${module.service-accounts[0].email}"
 }
-
 
 #Todo: allow for other TF backends than gcs
 resource "google_cloudbuild_trigger" "my-repo-trigger" {
