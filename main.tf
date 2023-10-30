@@ -5,7 +5,7 @@ module "service-accounts" {
   version = "4.2.2"
   description = "SA for Codebuild Pipeline"
   names         = ["${var.resource_prefix}-sa"]
-  project_roles = ["]"
+  project_roles = ["roles/iam.serviceAccountTokenCreator"]
 }
 
 resource "google_sourcerepo_repository" "my-repo" {
