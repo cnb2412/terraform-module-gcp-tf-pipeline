@@ -29,6 +29,13 @@ module "service-accounts" {
   names         = ["${var.resource_prefix}-sa"]
 }
 
+resource "google_storage_bucket_iam_member" "tf-state-bucket-member" {
+  bucket = google_storage_bucket.tf-state-bucket.name
+  role = "roles/storage.objectUser"
+  member = "serviceAccount:${module.service-accounts[0].email}"
+}
+
+
 #Todo: allow for other TF backends than gcs
 resource "google_cloudbuild_trigger" "my-repo-trigger" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
