@@ -11,7 +11,7 @@ module "service-accounts" {
 locals {
   sa_roles = [
     "roles/iam.serviceAccountTokenCreator",
-    "roles/source.reader"
+    "roles/cloudbuild.builds.builder"
   ]
 }
 resource "google_project_iam_member" "project" {
