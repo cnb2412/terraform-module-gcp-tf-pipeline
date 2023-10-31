@@ -5,7 +5,7 @@ module "service-accounts" {
   version = "4.2.2"
   description = "SA for Codebuild Pipeline"
   names         = ["${var.resource_prefix}-sa"]
-  project_roles = []
+  project_roles = ["roles/source.reader"]
 }
 
 resource "google_project_iam_member" "project" {
