@@ -5,13 +5,19 @@ module "service-accounts" {
   version = "4.2.2"
   description = "SA for Codebuild Pipeline"
   names         = ["${var.resource_prefix}-sa"]
-  project_roles = ["roles/source.reader"]
+  project_roles = []
 }
 
+locals {
+  sa_roles = [
+    "roles/iam.serviceAccountTokenCreator",
+    "roles/source.reader"
+  ]
+}
 resource "google_project_iam_member" "project" {
-  count = var.create_sa_for_codebuild ? 1 : 0
+  count = var.create_sa_for_codebuild ? length(local.sa_roles) : 0
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  role    = "roles/iam.serviceAccountTokenCreator"
+  role    = local.sa_roles[count.index]
   member = "serviceAccount:${module.service-accounts[0].email}"
 }
 
