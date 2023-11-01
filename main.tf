@@ -66,13 +66,13 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
     branch_name = "^main$"
     repo_name   = google_sourcerepo_repository.my-repo.name
   }
-#   service_account = module.service-accounts[0].service_account.id
+  service_account = module.service-accounts[0].service_account.id
   build {
       source {
       # we need both, repo_sorce AND trigger template
       repo_source {
           repo_name   = google_sourcerepo_repository.my-repo.name
-          branch_name = "^main$"
+          branch_name = "^master$"
       }
     }
       timeout = "600s"
