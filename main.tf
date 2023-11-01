@@ -29,7 +29,7 @@ locals {
 }
 resource "google_project_iam_member" "cloudbuild_sa_roles" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  role    = local.sa_roles[count.index]
+  role    = local.sa_roles
   member = "serviceAccount:${data.google_project.iac_project.number}@cloudbuild.gserviceaccount.com"
 }
 
