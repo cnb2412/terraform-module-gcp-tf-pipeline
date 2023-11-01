@@ -35,20 +35,17 @@ resource "google_project_iam_member" "cloudbuild_sa_roles" {
 }
 
 ##permission for service account, with is used within the pipeline, i.e. sa created in this script
-# locals {
-#   sa_roles = [
-#     "roles/iam.serviceAccountTokenCreator",
-#     "roles/cloudbuild.serviceAgent"
-#   ]
-# }
-# resource "google_project_iam_member" "project" {
-#   count = var.create_sa_for_codebuild ? length(local.sa_roles) : 0
-#   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-#   role    = local.sa_roles[count.index]
-#   member = "serviceAccount:${module.service-accounts[0].email}"
-# }
-
-
+locals {
+  sa_roles = [
+    "rroles/logging.logWriter"
+  ]
+}
+resource "google_project_iam_member" "sa_assigend_in_cb_roles" {
+  count = var.create_sa_for_codebuild ? length(local.sa_roles) : 0
+  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  role    = local.sa_roles[count.index]
+  member = "serviceAccount:${module.service-accounts[0].email}"
+}
 
 
 
