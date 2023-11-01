@@ -127,4 +127,7 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
         args = ["apply", "-input=false","/workspace/plan.out"]
       }
   }  
+  options {
+    logging = "CLOUD_LOGGING_ONLY"
+  }
 }
