@@ -28,8 +28,9 @@ locals {
   ]
 }
 resource "google_project_iam_member" "cloudbuild_sa_roles" {
+  count = length(local.sa_used_in_cb_roles)
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  role    = local.sa_roles
+  role    = local.sa_roles[count.index]
   member = "serviceAccount:${data.google_project.iac_project.number}@cloudbuild.gserviceaccount.com"
 }
 
