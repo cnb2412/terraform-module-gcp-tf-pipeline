@@ -63,7 +63,7 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   name          = "${var.resource_prefix}-repo-main-trigger"
   trigger_template {
-    branch_name = "^main$"
+    branch_name = "^master$"
     repo_name   = google_sourcerepo_repository.my-repo.name
   }
   service_account = module.service-accounts[0].service_account.id
