@@ -126,8 +126,8 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["apply", "-input=false","/workspace/plan.out"]
       }
-  }  
-  options {
+      options {
     logging = "CLOUD_LOGGING_ONLY"
   }
+  }  
 }
