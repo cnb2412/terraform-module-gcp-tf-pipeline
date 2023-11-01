@@ -8,19 +8,6 @@ module "service-accounts" {
   project_roles = []
 }
 
-# locals {
-#   sa_roles = [
-#     "roles/iam.serviceAccountTokenCreator",
-#     "roles/cloudbuild.serviceAgent"
-#   ]
-# }
-# resource "google_project_iam_member" "project" {
-#   count = var.create_sa_for_codebuild ? length(local.sa_roles) : 0
-#   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-#   role    = local.sa_roles[count.index]
-#   member = "serviceAccount:${module.service-accounts[0].email}"
-# }
-
 resource "google_sourcerepo_repository" "my-repo" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   name = "${var.resource_prefix}-repo"
@@ -34,13 +21,43 @@ resource "google_sourcerepo_repository_iam_member" "editors" {
   member  = element(var.repo_writers, count.index)
 }
 
-
-resource "google_sourcerepo_repository_iam_member" "cloudbuild_sa_access" {
+##permission for service account, with wich the pipeline starts <id>@cloudbuild.gserviceaccount.com
+locals {
+  sa_roles = [
+    "roles/cloudbuild.builds.builder"
+  ]
+}
+resource "google_project_iam_member" "cloudbuild_sa_roles" {
+  count = var.create_sa_for_codebuild ? length(local.sa_roles) : 0
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  repository = google_sourcerepo_repository.my-repo.name
-  role    = "roles/source.reader"
+  role    = local.sa_roles[count.index]
   member = "serviceAccount:${data.google_project.iac_project.number}@cloudbuild.gserviceaccount.com"
 }
+
+##permission for service account, with is used within the pipeline, i.e. sa created in this script
+# locals {
+#   sa_roles = [
+#     "roles/iam.serviceAccountTokenCreator",
+#     "roles/cloudbuild.serviceAgent"
+#   ]
+# }
+# resource "google_project_iam_member" "project" {
+#   count = var.create_sa_for_codebuild ? length(local.sa_roles) : 0
+#   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+#   role    = local.sa_roles[count.index]
+#   member = "serviceAccount:${module.service-accounts[0].email}"
+# }
+
+
+
+
+
+# resource "google_sourcerepo_repository_iam_member" "cloudbuild_sa_access" {
+#   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+#   repository = google_sourcerepo_repository.my-repo.name
+#   role    = "roles/source.reader"
+#   member = "serviceAccount:${data.google_project.iac_project.number}@cloudbuild.gserviceaccount.com"
+# }
 
 resource "google_storage_bucket" "tf-state-bucket" {
     project = length(var.storage_project_id) > 0 ? var.storage_project_id : var.project_id
