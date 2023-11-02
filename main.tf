@@ -40,6 +40,7 @@ locals {
   ]
 }
 resource "google_project_iam_member" "sa_assigend_in_cb_roles" {
+  count = length(local.sa_used_in_cb_roles)
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   role    = local.sa_roles[count.index]
   member = "serviceAccount:${module.service-accounts.email}"
