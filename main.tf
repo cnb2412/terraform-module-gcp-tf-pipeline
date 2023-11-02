@@ -101,7 +101,7 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
         args = ["init", "-input=false",
                 "-backend-config=bucket=${trimprefix(google_storage_bucket.tf-state-bucket.url,"gs://")}"]
         id = "tf init"
-        env = length(deployment_project_id) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id}"] : null
+        env = length(var.deployment_project_id) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id}"] : null
       }
       step {
         id = "tf plan"
