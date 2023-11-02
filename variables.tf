@@ -13,6 +13,12 @@ variable "repo_project_id" {
   default = ""
 }
 
+variable "deployment_project_id" {
+  description = "The ID of the project where the IaC ressources should be deployed to."
+  type        = string
+  default = ""
+}
+
 variable "resource_prefix" {
   description = "The name for the resources. A resource type postfix is appended to the individual ressources."
   type        = string
