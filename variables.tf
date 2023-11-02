@@ -51,10 +51,3 @@ variable "tf_backend" {
         error_message = "Currently only GCP Storageaccount is supported."
   } 
 }
-
-variable "create_sa_for_codebuild" {
-    description = "Should a dedicated service account for the codebuild pipeline be created."
-    type = bool
-    default = true
-}
-

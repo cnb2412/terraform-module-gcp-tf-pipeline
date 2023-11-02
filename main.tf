@@ -1,6 +1,5 @@
 module "service-accounts" {
   source  = "terraform-google-modules/service-accounts/google"
-  count = var.create_sa_for_codebuild ? 1 : 0
   project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   version = "4.2.2"
   description = "SA for Codebuild Pipeline"
@@ -41,20 +40,10 @@ locals {
   ]
 }
 resource "google_project_iam_member" "sa_assigend_in_cb_roles" {
-  count = var.create_sa_for_codebuild ? length(local.sa_used_in_cb_roles) : 0
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   role    = local.sa_roles[count.index]
-  member = "serviceAccount:${module.service-accounts[0].email}"
+  member = "serviceAccount:${module.service-accounts.email}"
 }
-
-
-
-# resource "google_sourcerepo_repository_iam_member" "cloudbuild_sa_access" {
-#   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-#   repository = google_sourcerepo_repository.my-repo.name
-#   role    = "roles/source.reader"
-#   member = "serviceAccount:${data.google_project.iac_project.number}@cloudbuild.gserviceaccount.com"
-# }
 
 resource "google_storage_bucket" "tf-state-bucket" {
     project = length(var.storage_project_id) > 0 ? var.storage_project_id : var.project_id
@@ -66,10 +55,9 @@ resource "google_storage_bucket" "tf-state-bucket" {
 }
 
 resource "google_storage_bucket_iam_member" "tf-state-bucket-member" {
-  count = var.create_sa_for_codebuild ? 1 : 0
   bucket = google_storage_bucket.tf-state-bucket.name
   role = "roles/storage.objectUser"
-  member = "serviceAccount:${module.service-accounts[0].email}"
+  member = "serviceAccount:${module.service-accounts.email}"
 }
 
 #Todo: allow for other TF backends than gcs
@@ -80,7 +68,7 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
     branch_name = "^master$"
     repo_name   = google_sourcerepo_repository.my-repo.name
   }
-  service_account = module.service-accounts[0].service_account.id
+  service_account = module.service-accounts.service_account.id
   build {
       source {
       # we need both, repo_sorce AND trigger template
