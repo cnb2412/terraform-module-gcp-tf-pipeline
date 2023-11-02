@@ -24,7 +24,8 @@ The Project Factory module will take the following actions:
 1. Create a source repo on GCP porject
 1. Create a dedicated service account for code build to deploy IaC ressources
 1. Storage bucket for TF state file
-1. Cloud Build Trigger and build config to deploy iA
+1. Cloud Build Trigger and build config to deploy iac ressources
+1.1 Create env var in build config TF_VAR_project_id to use the project id in builds
 
 
 <!-- BEGIN_TF_DOCS -->
