@@ -1,4 +1,5 @@
-module "service-accounts" {
+module "service-account-test" {
+  count = var.create_test ? 1 : 0
   source  = "terraform-google-modules/service-accounts/google"
   project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   version = "4.2.2"
@@ -35,17 +36,18 @@ resource "google_project_iam_member" "cloudbuild_sa_roles" {
 
 ##permission for service account, with is used within the pipeline, i.e. sa created in this script
 locals {
-  sa_used_in_cb_roles = [
+  sa_used_in_cb_roles_test = [
     "rroles/logging.logWriter"
   ]
 }
 resource "google_project_iam_member" "sa_assigend_in_cb_roles" {
-  count = length(local.sa_used_in_cb_roles)
+  count = var.create_test ? length(local.sa_used_in_cb_roles_test) : 0 
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   role    = local.sa_roles[count.index]
-  member = "serviceAccount:${module.service-accounts.email}"
+  member = "serviceAccount:${module.service-account-test[0].email}"
 }
 
+## storage bucket for tf states
 resource "google_storage_bucket" "tf-state-bucket" {
     project = length(var.storage_project_id) > 0 ? var.storage_project_id : var.project_id
     name          = "${var.resource_prefix}-tfstate-storage"
@@ -58,24 +60,26 @@ resource "google_storage_bucket" "tf-state-bucket" {
 resource "google_storage_bucket_iam_member" "tf-state-bucket-member" {
   bucket = google_storage_bucket.tf-state-bucket.name
   role = "roles/storage.objectUser"
-  member = "serviceAccount:${module.service-accounts.email}"
+  member = "serviceAccount:${module.service-account-test[0].email}"
 }
 
 #Todo: allow for other TF backends than gcs
-resource "google_cloudbuild_trigger" "my-repo-trigger" {
+resource "google_cloudbuild_trigger" "test_stage_trigger" {
+  count = var.create_test ? 1 : 0
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  name          = "${var.resource_prefix}-repo-main-trigger"
+  name          = "${var.resource_prefix}-test-env-trigger"
+  description = "Cloud Build trigger for ${var.resource_prefix} deployment to test env."
   trigger_template {
-    branch_name = "^master$"
+    branch_name = "^${trigger_branch}$"
     repo_name   = google_sourcerepo_repository.my-repo.name
   }
-  service_account = module.service-accounts.service_account.id
+  service_account = module.service-account-test[0].service_account.id
   build {
       source {
       # we need both, repo_sorce AND trigger template
       repo_source {
           repo_name   = google_sourcerepo_repository.my-repo.name
-          branch_name = "^master$"
+          branch_name = "^${trigger_branch}$"
       }
     }
       timeout = "600s"
@@ -99,7 +103,8 @@ resource "google_cloudbuild_trigger" "my-repo-trigger" {
       step {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["init", "-input=false",
-                "-backend-config=bucket=${trimprefix(google_storage_bucket.tf-state-bucket.url,"gs://")}"]
+                "-backend-config=bucket=${trimprefix(google_storage_bucket.tf-state-bucket.url,"gs://")}",
+                "-backend-config=prefix=test_env"]
         id = "tf init"
       }
       step {

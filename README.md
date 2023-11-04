@@ -1,7 +1,9 @@
 # Terraform module to create a CICD pipline Terraform pipeline
 
-This module allows for creating a CICD pipline on GCP to develop and deploy
+This module allows for creating multistate CICD piplines on GCP to develop and deploy
 IaC.
+
+It follows a trunk-based approach. That is, it creates a pipeline that is triggered by a commit to the main branch of a git repo and deploys automatically to a test env. Furthermore, it creates a second pipeline tht is triggered manually to deloy the same branch to a prod env.
 
 ## Usage
 

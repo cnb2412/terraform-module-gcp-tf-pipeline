@@ -57,3 +57,16 @@ variable "tf_backend" {
         error_message = "Currently only GCP Storageaccount is supported."
   } 
 }
+
+variable "create_test" {
+  default = true
+  type = bool
+  description = "Creates all ressources for iac pipeline to  deploy to test stage. Default true."
+}
+
+#### Config for test env pipeline
+variable "trigger_branch" {
+  default = "master"
+  type = string
+  description = "Branch by which the pipeline is triggerend, whenn committed to. Default master."
+}
