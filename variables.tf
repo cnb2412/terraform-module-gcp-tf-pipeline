@@ -15,7 +15,7 @@ variable "repo_project_id" {
 
 variable "location" {
   description = "The Cloud Build location for the trigger. Default europe-north1"
-  default = "europe-north1"
+  default = "europe-west1"
   type = string
 }
 
