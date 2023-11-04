@@ -48,7 +48,8 @@ resource "google_sourcerepo_repository_iam_member" "repo_reader_prod" {
 ##permission for service account, with wich the pipeline starts <id>@cloudbuild.gserviceaccount.com
 locals {
   sa_roles = [
-    "roles/cloudbuild.builds.builder"
+    "roles/cloudbuild.builds.builder",
+    "roles/logging.logWriter"
   ]
 }
 resource "google_project_iam_member" "cloudbuild_sa_roles" {
