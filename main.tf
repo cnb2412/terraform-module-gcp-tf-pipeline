@@ -46,15 +46,21 @@ resource "google_project_iam_member" "cloudbuild_sa_roles" {
 
 ##permission for service account, with is used within the pipeline, i.e. sa created in this script
 locals {
-  sa_used_in_cb_roles_test = [
+  sa_used_in_cb_roles = [
     "rroles/logging.logWriter"
   ]
 }
 resource "google_project_iam_member" "sa_assigend_in_cb_roles" {
-  count = var.create_test ? length(local.sa_used_in_cb_roles_test) : 0 
+  count = var.create_test ? length(local.sa_used_in_cb_roles) : 0 
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
-  role    = local.sa_roles[count.index]
+  role    = local.sa_used_in_cb_roles[count.index]
   member = "serviceAccount:${module.service-account-test[0].email}"
+}
+resource "google_project_iam_member" "sa_assigend_in_cb_prod_roles" {
+  count = var.create_prod ? length(local.sa_used_in_cb_roles) : 0 
+  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  role    = local.sa_used_in_cb_roles[count.index]
+  member = "serviceAccount:${module.service-account-prod[0].email}"
 }
 
 ## storage bucket for tf states
