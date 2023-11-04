@@ -3,8 +3,18 @@ module "service-account-test" {
   source  = "terraform-google-modules/service-accounts/google"
   project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   version = "4.2.2"
-  description = "SA for Codebuild Pipeline"
-  names         = ["${var.resource_prefix}-sa"]
+  description = "SA for Codebuild Pipeline (Test env)"
+  names         = ["${var.resource_prefix}-sa-t"]
+  project_roles = []
+}
+
+module "service-account-prod" {
+  count = var.create_prod ? 1 : 0
+  source  = "terraform-google-modules/service-accounts/google"
+  project_id = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  version = "4.2.2"
+  description = "SA for Codebuild Pipeline (Prod env)"
+  names         = ["${var.resource_prefix}-sa-p"]
   project_roles = []
 }
 
@@ -111,16 +121,66 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
         id = "tf plan"
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["plan", "-input=false",  "-out=/workspace/plan.out"]
-        env = length(var.deployment_project_id) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id}"] : null
+        env = length(var.deployment_project_id_test) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_test}"] : null
       }
       step {
         id = "tf apply"
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["apply", "-input=false","/workspace/plan.out"]
-        env = length(var.deployment_project_id) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id}"] : null
+        env = length(var.deployment_project_id_test) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_test}"] : null
       }
       options {
     logging = "CLOUD_LOGGING_ONLY"
   }
   }  
+}
+
+resource "google_cloudbuild_trigger" "prod_stage_trigger" {
+  count = var.create_prod ? 1 : 0
+  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  name          = "${var.resource_prefix}-prod-env-trigger"
+  description = "Cloud Build trigger for ${var.resource_prefix} deployment to Prod env."
+  service_account = module.service-account-prod[0].service_account.id
+  trigger_template {
+    repo_name   = google_sourcerepo_repository.my-repo.name
+    branch_name = "^buildtag$"
+  } 
+  build {
+    source {
+      repo_source {
+          repo_name   = google_sourcerepo_repository.my-repo.name
+          branch_name = "^${var.trigger_branch}$"
+      }
+    }
+    timeout = "600s"
+    options {
+      logging = "CLOUD_LOGGING_ONLY"
+    }
+    step {
+      id = "create tf backend config"
+      name   = "ubuntu"
+      script = <<EOT
+        echo 'terraform {\n backend "gcs" { \n }\n }' > backend.tf
+      EOT
+    }
+    step {
+      name = "hashicorp/terraform:${var.tf_version}"
+      args = ["init", "-input=false",
+              "-backend-config=bucket=${trimprefix(google_storage_bucket.tf-state-bucket.url,"gs://")}",
+              "-backend-config=prefix=test_prod"]
+      id = "tf init"
+    }
+    step {
+      id = "tf plan"
+      name = "hashicorp/terraform:${var.tf_version}"
+      args = ["plan", "-input=false",  "-out=/workspace/plan.out"]
+      env = length(var.deployment_project_id_prod) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_prod}"] : null
+    }
+    step {
+      id = "tf apply"
+      name = "hashicorp/terraform:${var.tf_version}"
+      args = ["apply", "-input=false","/workspace/plan.out"]
+      env = length(var.deployment_project_id_prod) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_prod}"] : null
+    }
+  }
 }

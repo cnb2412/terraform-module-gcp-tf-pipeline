@@ -13,12 +13,6 @@ variable "repo_project_id" {
   default = ""
 }
 
-variable "deployment_project_id" {
-  description = "The ID of the project where the IaC ressources should be deployed to."
-  type        = string
-  default = ""
-}
-
 variable "resource_prefix" {
   description = "The name for the resources. A resource type postfix is appended to the individual ressources."
   type        = string
@@ -64,9 +58,28 @@ variable "create_test" {
   description = "Creates all ressources for iac pipeline to  deploy to test stage. Default true."
 }
 
+variable "create_prod" {
+  default = true
+  type = bool
+  description = "Creates all ressources for iac pipeline to  deploy to Prod stage. Default true."
+}
+
 #### Config for test env pipeline
 variable "trigger_branch" {
   default = "master"
   type = string
   description = "Branch by which the pipeline is triggerend, whenn committed to. Default master."
+}
+
+variable "deployment_project_id_test" {
+  description = "The ID of the project where the IaC ressources should be deployed to for test env."
+  type        = string
+  default = ""
+}
+
+#### Config for prod env pipeline
+variable "deployment_project_id_prod" {
+  description = "The ID of the project where the IaC ressources should be deployed to for prod env."
+  type        = string
+  default = ""
 }
