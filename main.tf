@@ -42,13 +42,13 @@ resource "google_sourcerepo_repository_iam_member" "repo_reader_prod" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   repository = google_sourcerepo_repository.my-repo.name
   role    = "roles/source.reader"
-  member  = "serviceAccount:${module.service-account-prod[0].email}"
+  member  = "serviceAccount:${module.service-account-test[0].email}"
 }
 
 ##permission for service account, with wich the pipeline starts <id>@cloudbuild.gserviceaccount.com
 locals {
   sa_roles = [
-    "roles/cloudbuild.builds.builder",
+    "roles/cloudbuild.builds.builder"
   ]
 }
 resource "google_project_iam_member" "cloudbuild_sa_roles" {
