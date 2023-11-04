@@ -122,8 +122,8 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["plan", "-input=false",  "-out=/workspace/plan.out"]
         env = [
-          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : null,
-          length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_test}" : null
+          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : "",
+          length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_test}" : ""
         ]
         
         
@@ -133,8 +133,8 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["apply", "-input=false","/workspace/plan.out"]
         env = [
-          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : null,
-          length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_test}" : null
+          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : "",
+          length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_test}" : ""
         ]
       }
       options {
