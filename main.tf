@@ -47,7 +47,7 @@ resource "google_project_iam_member" "cloudbuild_sa_roles" {
 ##permission for service account, with is used within the pipeline, i.e. sa created in this script
 locals {
   sa_used_in_cb_roles = [
-    "rroles/logging.logWriter"
+    "roles/logging.logWriter"
   ]
 }
 resource "google_project_iam_member" "sa_assigend_in_cb_roles" {
