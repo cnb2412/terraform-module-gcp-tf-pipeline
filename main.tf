@@ -70,7 +70,7 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
   name          = "${var.resource_prefix}-test-env-trigger"
   description = "Cloud Build trigger for ${var.resource_prefix} deployment to test env."
   trigger_template {
-    branch_name = "^${trigger_branch}$"
+    branch_name = "^${var.trigger_branch}$"
     repo_name   = google_sourcerepo_repository.my-repo.name
   }
   service_account = module.service-account-test[0].service_account.id
@@ -79,7 +79,7 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
       # we need both, repo_sorce AND trigger template
       repo_source {
           repo_name   = google_sourcerepo_repository.my-repo.name
-          branch_name = "^${trigger_branch}$"
+          branch_name = "^${var.trigger_branch}$"
       }
     }
       timeout = "600s"
