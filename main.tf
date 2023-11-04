@@ -79,6 +79,7 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
   project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
   name          = "${var.resource_prefix}-test-env-trigger"
   description = "Cloud Build trigger for ${var.resource_prefix} deployment to test env."
+  location = var.location
   trigger_template {
     branch_name = "^${var.trigger_branch}$"
     repo_name   = google_sourcerepo_repository.my-repo.name
