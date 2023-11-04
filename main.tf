@@ -182,13 +182,19 @@ resource "google_cloudbuild_trigger" "prod_stage_trigger" {
       id = "tf plan"
       name = "hashicorp/terraform:${var.tf_version}"
       args = ["plan", "-input=false",  "-out=/workspace/plan.out"]
-      env = length(var.deployment_project_id_prod) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_prod}"] : null
+      env = [
+          length(var.deployment_project_id_prod) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_prod}" : "",
+          length(var.tf_worksapce_prod) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_prod}" : ""
+      ]
     }
     step {
       id = "tf apply"
       name = "hashicorp/terraform:${var.tf_version}"
       args = ["apply", "-input=false","/workspace/plan.out"]
-      env = length(var.deployment_project_id_prod) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_prod}"] : null
+      env = [
+        length(var.deployment_project_id_prod) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_prod}" : "",
+        length(var.tf_worksapce_prod) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_prod}" : ""
+      ]
     }
   }
 }
