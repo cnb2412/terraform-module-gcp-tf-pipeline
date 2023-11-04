@@ -151,7 +151,7 @@ resource "google_cloudbuild_trigger" "prod_stage_trigger" {
   location = var.location
   service_account = module.service-account-prod[0].service_account.id
   source_to_build {
-    repository       = google_sourcerepo_repository.my-repo.name
+    uri       = google_sourcerepo_repository.my-repo.url
     ref       = "refs/heads/${var.trigger_branch}"
     repo_type = "CLOUD_SOURCE_REPOSITORIES"
   } 
