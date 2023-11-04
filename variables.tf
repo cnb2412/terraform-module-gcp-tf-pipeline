@@ -77,9 +77,21 @@ variable "deployment_project_id_test" {
   default = ""
 }
 
+variable "tf_worksapce_test" {
+  type = string
+  description = "The name of the TF that should be used in pipeline for test env. Default none"
+  default = ""
+}
+
 #### Config for prod env pipeline
 variable "deployment_project_id_prod" {
   description = "The ID of the project where the IaC ressources should be deployed to for prod env."
   type        = string
+  default = ""
+}
+
+variable "tf_worksapce_prod" {
+  type = string
+  description = "The name of the TF that should be used in pipeline for prod env. Default none"
   default = ""
 }

@@ -121,13 +121,21 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
         id = "tf plan"
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["plan", "-input=false",  "-out=/workspace/plan.out"]
-        env = length(var.deployment_project_id_test) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_test}"] : null
+        env = [
+          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : null,
+          length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${tf_worksapce_test}" : null
+        ]
+        
+        
       }
       step {
         id = "tf apply"
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["apply", "-input=false","/workspace/plan.out"]
-        env = length(var.deployment_project_id_test) > 0 ? ["TF_VAR_project_id=${var.deployment_project_id_test}"] : null
+        env = [
+          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : null,
+          length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${tf_worksapce_test}" : null
+        ]
       }
       options {
     logging = "CLOUD_LOGGING_ONLY"
