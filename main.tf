@@ -93,6 +93,11 @@ resource "google_storage_bucket_iam_member" "tf-state-bucket-member" {
   role = "roles/storage.objectUser"
   member = "serviceAccount:${module.service-account-test[0].email}"
 }
+resource "google_storage_bucket_iam_member" "tf-state-bucket-member-prod" {
+  bucket = google_storage_bucket.tf-state-bucket.name
+  role = "roles/storage.objectUser"
+  member = "serviceAccount:${module.service-account-prod[0].email}"
+}
 
 #Todo: allow for other TF backends than gcs
 resource "google_cloudbuild_trigger" "test_stage_trigger" {
