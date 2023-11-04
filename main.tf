@@ -149,9 +149,10 @@ resource "google_cloudbuild_trigger" "prod_stage_trigger" {
   name          = "${var.resource_prefix}-prod-env-trigger"
   description = "Cloud Build trigger for ${var.resource_prefix} deployment to Prod env."
   service_account = module.service-account-prod[0].service_account.id
-  trigger_template {
-    repo_name   = google_sourcerepo_repository.my-repo.name
-    branch_name = "^buildtag$"
+  source_to_build {
+    repository       = google_sourcerepo_repository.my-repo.name
+    ref       = "refs/heads/${var.trigger_branch}"
+    repo_type = "CLOUD_SOURCE_REPOSITORIES"
   } 
   build {
     source {
