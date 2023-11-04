@@ -13,6 +13,12 @@ variable "repo_project_id" {
   default = ""
 }
 
+variable "location" {
+  description = "The Cloud Build location for the trigger. Default europe-north1"
+  default = "europe-north1"
+  type = string
+}
+
 variable "resource_prefix" {
   description = "The name for the resources. A resource type postfix is appended to the individual ressources."
   type        = string
