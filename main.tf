@@ -83,6 +83,7 @@ resource "google_storage_bucket" "tf-state-bucket" {
     project = length(var.storage_project_id) > 0 ? var.storage_project_id : var.project_id
     name          = "${var.resource_prefix}-tfstate-storage"
     location      = var.storage_bucket_location
+    force_destroy = true
     versioning {
         enabled = true
     }
