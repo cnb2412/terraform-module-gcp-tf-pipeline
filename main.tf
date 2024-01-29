@@ -131,16 +131,6 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
       EOT
       }
       step {
-      id = "debug tf backend"
-      name   = "ubuntu"
-      script = "ls -l; cat backend.tf"
-      }
-      step {
-      id = "gcloud whoami"
-      name   = "gcr.io/cloud-builders/gcloud"
-      args = ["auth", "list"]
-      }
-      step {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["init", "-input=false",
                 "-backend-config=bucket=${trimprefix(google_storage_bucket.tf-state-bucket.url,"gs://")}",
