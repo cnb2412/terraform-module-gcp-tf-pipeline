@@ -142,7 +142,7 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["plan", "-input=false",  "-out=/workspace/plan.out"]
         env = [
-          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : "",
+          length(var.deployment_project_id_test) > 0 ? "GOOGLE_PROJECT=${var.deployment_project_id_test}" : "",
           length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_test}" : ""
         ]
         
@@ -153,7 +153,7 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
         name = "hashicorp/terraform:${var.tf_version}"
         args = ["apply", "-input=false","/workspace/plan.out"]
         env = [
-          length(var.deployment_project_id_test) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_test}" : "",
+          length(var.deployment_project_id_test) > 0 ? "GOOGLE_PROJECT=${var.deployment_project_id_test}" : "",
           length(var.tf_worksapce_test) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_test}" : ""
         ]
       }
@@ -205,7 +205,7 @@ resource "google_cloudbuild_trigger" "prod_stage_trigger" {
       name = "hashicorp/terraform:${var.tf_version}"
       args = ["plan", "-input=false",  "-out=/workspace/plan.out"]
       env = [
-          length(var.deployment_project_id_prod) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_prod}" : "",
+          length(var.deployment_project_id_prod) > 0 ? "GOOGLE_PROJECT=${var.deployment_project_id_prod}" : "",
           length(var.tf_worksapce_prod) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_prod}" : ""
       ]
     }
@@ -214,7 +214,7 @@ resource "google_cloudbuild_trigger" "prod_stage_trigger" {
       name = "hashicorp/terraform:${var.tf_version}"
       args = ["apply", "-input=false","/workspace/plan.out"]
       env = [
-        length(var.deployment_project_id_prod) > 0 ? "TF_VAR_project_id=${var.deployment_project_id_prod}" : "",
+        length(var.deployment_project_id_prod) > 0 ? "GOOGLE_PROJECT=${var.deployment_project_id_prod}" : "",
         length(var.tf_worksapce_prod) > 0 ? "TF_WORKSPACE=${var.tf_worksapce_prod}" : ""
       ]
     }
