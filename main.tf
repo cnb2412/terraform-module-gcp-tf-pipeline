@@ -90,11 +90,13 @@ resource "google_storage_bucket" "tf-state-bucket" {
 }
 
 resource "google_storage_bucket_iam_member" "tf-state-bucket-member" {
+  count   = var.create_test ? 1 : 0
   bucket = google_storage_bucket.tf-state-bucket.name
   role = "roles/storage.objectUser"
   member = "serviceAccount:${module.service-account-test[0].email}"
 }
 resource "google_storage_bucket_iam_member" "tf-state-bucket-member-prod" {
+  count = var.create_prod ? 1 : 0
   bucket = google_storage_bucket.tf-state-bucket.name
   role = "roles/storage.objectUser"
   member = "serviceAccount:${module.service-account-prod[0].email}"
