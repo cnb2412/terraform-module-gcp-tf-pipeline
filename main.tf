@@ -17,7 +17,9 @@ module "service-account-prod" {
   version = "4.2.2"
   description = "SA for Codebuild Pipeline (Prod env)"
   names         = ["${var.resource_prefix}-sa-p"]
-  project_roles = []
+  project_roles = [
+    "${var.repo_project_id}=>roles/logging.logWriter"
+  ]
 }
 
 resource "google_sourcerepo_repository" "my-repo" {
