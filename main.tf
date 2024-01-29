@@ -5,7 +5,9 @@ module "service-account-test" {
   version = "4.2.2"
   description = "SA for Codebuild Pipeline (Test env)"
   names         = ["${var.resource_prefix}-sa-t"]
-  project_roles = []
+  project_roles = [
+    "${var.repo_project_id}=>roles/logging.logWriter"
+  ]
 }
 
 module "service-account-prod" {
@@ -62,7 +64,6 @@ resource "google_project_iam_member" "cloudbuild_sa_roles" {
 ##permission for service account, with is used within the pipeline, i.e. sa created in this script
 locals {
   sa_used_in_cb_roles = [
-    "roles/logging.logWriter",
     "roles/editor"
   ]
 }
