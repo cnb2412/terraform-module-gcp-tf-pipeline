@@ -6,7 +6,7 @@ module "service-account-test" {
   description = "SA for Codebuild Pipeline (Test env)"
   names         = ["${var.resource_prefix}-sa-t"]
   project_roles = [
-    "${var.repo_project_id}=>roles/logging.logWriter"
+    "${var.project_id}=>roles/logging.logWriter"
   ]
 }
 
@@ -18,32 +18,32 @@ module "service-account-prod" {
   description = "SA for Codebuild Pipeline (Prod env)"
   names         = ["${var.resource_prefix}-sa-p"]
   project_roles = [
-    "${var.repo_project_id}=>roles/logging.logWriter"
+    "${var.project_id}=>roles/logging.logWriter"
   ]
 }
 
 resource "google_sourcerepo_repository" "my-repo" {
-  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  project = var.project_id
   name = "${var.resource_prefix}-repo"
 }
 
 resource "google_sourcerepo_repository_iam_member" "editors" {
   count   = length(var.repo_writers)
-  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  project = var.project_id
   repository = google_sourcerepo_repository.my-repo.name
   role    = "roles/source.writer"
   member  = element(var.repo_writers, count.index)
 }
 resource "google_sourcerepo_repository_iam_member" "repo_reader_test" {
   count   = var.create_test ? 1 : 0
-  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  project = var.project_id
   repository = google_sourcerepo_repository.my-repo.name
   role    = "roles/source.reader"
   member  = "serviceAccount:${module.service-account-test[0].email}"
 }
 resource "google_sourcerepo_repository_iam_member" "repo_reader_prod" {
   count   = var.create_prod ? 1 : 0
-  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  project = var.project_id
   repository = google_sourcerepo_repository.my-repo.name
   role    = "roles/source.reader"
   member  = "serviceAccount:${module.service-account-prod[0].email}"
@@ -58,7 +58,7 @@ locals {
 }
 resource "google_project_iam_member" "cloudbuild_sa_roles" {
   count = length(local.sa_roles)
-  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  project = var.project_id
   role    = local.sa_roles[count.index]
   member = "serviceAccount:${data.google_project.iac_project.number}@cloudbuild.gserviceaccount.com"
 }
@@ -84,7 +84,7 @@ resource "google_project_iam_member" "sa_assigend_in_cb_prod_roles" {
 
 ## storage bucket for tf states
 resource "google_storage_bucket" "tf-state-bucket" {
-    project = length(var.storage_project_id) > 0 ? var.storage_project_id : var.project_id
+    project = var.project_id
     name          = "${var.resource_prefix}-tfstate-storage"
     location      = var.storage_bucket_location
     force_destroy = true
@@ -109,7 +109,7 @@ resource "google_storage_bucket_iam_member" "tf-state-bucket-member-prod" {
 #Todo: allow for other TF backends than gcs
 resource "google_cloudbuild_trigger" "test_stage_trigger" {
   count = var.create_test ? 1 : 0
-  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  project = var.project_id
   name          = "${var.resource_prefix}-test-env-trigger"
   description = "Cloud Build trigger for ${var.resource_prefix} deployment to test env."
   location = var.location
@@ -174,7 +174,7 @@ resource "google_cloudbuild_trigger" "test_stage_trigger" {
 
 resource "google_cloudbuild_trigger" "prod_stage_trigger" {
   count = var.create_prod ? 1 : 0
-  project = length(var.repo_project_id) > 0 ? var.repo_project_id : var.project_id
+  project = var.project_id
   name          = "${var.resource_prefix}-prod-env-trigger"
   description = "Cloud Build trigger for ${var.resource_prefix} deployment to Prod env."
   location = var.location

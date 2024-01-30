@@ -1,16 +1,9 @@
 variable "project_id" {
   description = <<EOF
-    "The ID of the project where all required ressources will be created. 
-    If configured repo_project_id, storage_project_id should not be configured."
+    "The ID of the project where all required IaC ressources will be created,
+    e.g. the repo, the code build pipeline, tf storage account, etc."
   EOF
   type        = string
-  default = ""
-}
-
-variable "repo_project_id" {
-  description = "The ID of the project where the repo will be created."
-  type        = string
-  default = ""
 }
 
 variable "location" {
@@ -28,12 +21,6 @@ variable "repo_writers" {
   description = "Optional list of IAM-format members to set as source repo writer."
   type        = list(string)
   default     = []
-}
-
-variable "storage_project_id" {
-  description = "The ID of the project where the repo will be created"
-  type        = string
-  default = ""
 }
 
 variable "storage_bucket_location" {
