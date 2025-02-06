@@ -32,17 +32,17 @@ variable "storage_bucket_location" {
 variable "tf_version" {
   description = "The terraform version, which should be used in the pipeline."
   type        = string
-  default = "1.7.1"
+  default = "1.10"
 }
 
 variable "tf_backend" {
-    description = "Which Backend should be used for TF. Currently only GCP Storageaccount is supported."  
+    description = "Which Backend should be used for TF. Currently only GCP Storageaccount is supported."
     type        = string
     default = "gcs"
     validation {
         condition     = contains(["gcs"], var.tf_backend)
         error_message = "Currently only GCP Storageaccount is supported."
-  } 
+  }
 }
 
 variable "create_test" {
