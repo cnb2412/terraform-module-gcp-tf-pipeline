@@ -2,7 +2,7 @@ module "service-account-test" {
   count = var.create_test ? 1 : 0
   source  = "terraform-google-modules/service-accounts/google"
   project_id = var.project_id
-  version = "4.2.2"
+  version = "~> 4.7"
   description = "SA for Codebuild Pipeline (Test env)"
   names         = ["${var.resource_prefix}-sa-t"]
   project_roles = [
@@ -14,7 +14,7 @@ module "service-account-prod" {
   count = var.create_prod ? 1 : 0
   source  = "terraform-google-modules/service-accounts/google"
   project_id = var.project_id
-  version = "4.2.2"
+  version = "~> 4.7"
   description = "SA for Codebuild Pipeline (Prod env)"
   names         = ["${var.resource_prefix}-sa-p"]
   project_roles = [
