@@ -32,7 +32,7 @@ variable "storage_bucket_location" {
 variable "tf_version" {
   description = "The terraform version, which should be used in the pipeline."
   type        = string
-  default = "1.10"
+  default = "1.14.7"
 }
 
 variable "tf_backend" {
